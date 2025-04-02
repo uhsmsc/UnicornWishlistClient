@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@variant dark (&:where(.dark, .dark *));
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
+.my-masonry-grid {
+  display: -webkit-box; /* для старых версий Safari, iOS */
+  display: -ms-flexbox; /* для IE10 */
+  display: flex;        /* стандартный фолбек */
+  margin-left: -1rem;   /* отступы между колонками */
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 1rem; /* отступ для каждой колонки */
+  background-clip: padding-box;
+}
+.my-masonry-grid_column > div {
+  margin-bottom: 1rem; /* или нужное вам значение */
+}
+
+
+@layer base {
+  :root {
+  .bg-custom-gradient {
+    background: linear-gradient(45deg, #ccfff9, #fcf0ff, #bbb1f1);
+  }
+  
+  .bg-custom-gradient3 {
+    background-color: #000000;
+    background-image: radial-gradient(
+        at 30% 37%,
+        hsla(244, 89%, 70%, 1) 0,
+        hsla(244, 89%, 70%, 0) 50%
+      ),
+      radial-gradient(
+        at 54% 25%,
+        hsla(8, 89%, 68%, 1) 0,
+        hsla(8, 89%, 68%, 0) 50%
+      );
+      background-size: 100% 150%;
+  }
+  .bg-custom-gradient2 {
+    background: linear-gradient(115deg, #ffc6df, #60b9fc);
+  }
+  .bg-custom-gradient4 {
+    background: linear-gradient(to top, #9890e3 0%, #b1f4cf 100%);
+  }}
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-fade-out {
+  animation: fade-out 0.5s ease-in forwards;
+}
+
+
+
+@theme {
+  --font-primary: "Nunito", serif;
+  --font-secondary: "Montserrat", serif;
+}
+
+/* "Noto" Jost*/
