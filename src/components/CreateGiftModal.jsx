@@ -30,7 +30,9 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [priceError, setPriceError] = useState(false);
   const modalRef = useRef(null);
+
   useEffect(() => {
     if (giftData) {
       setLink(giftData.link || "");
@@ -43,6 +45,7 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
       setImageUrl(giftData.photo || "");
     }
   }, [giftData]);
+
   const handleOutsideClick = (event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
       onClose();
@@ -65,10 +68,18 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
         console.error("Ошибка: пользователь не авторизован.");
         return;
       }
+
+      let numericPrice = price.replace(/\s/g, "");
+
+      if (numericPrice.endsWith(".")) {
+        numericPrice = numericPrice.slice(0, -1);
+      }
+      const finalPrice = numericPrice ? Number(numericPrice) : undefined;
+
       const requestData = {
         link,
         title,
-        price: price ? Number(price) : undefined,
+        price: finalPrice,
         currency,
         photo: imageUrl || photo,
         desirability,
@@ -103,6 +114,36 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
     }
   };
 
+  const handlePriceChange = (e) => {
+    const original = e.target.value;
+    let value = original.replace(/\s+/g, "").replace(",", ".");
+    const parts = value.split(".");
+    let intPart = parts[0].replace(/\D/g, "");
+    let decimalPart = parts[1] ? parts[1].replace(/\D/g, "") : "";
+
+    if (decimalPart.length > 2) {
+      decimalPart = decimalPart.substring(0, 2);
+    }
+
+    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+    let formattedValue = formattedInt;
+    if (parts.length > 1 || original.endsWith(".") || original.endsWith(",")) {
+      formattedValue += "." + decimalPart;
+    }
+
+    const rawDigits = formattedValue.replace(/[\s.]/g, "");
+
+    if (rawDigits.length > 15) {
+      setPriceError(true);
+      return;
+    } else {
+      setPriceError(false);
+    }
+
+    setPrice(formattedValue);
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-50 z-50 font-primary">
       <div
@@ -122,7 +163,7 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
             value={link}
             onChange={(e) => setLink(e.target.value)}
             required
-            className="font-primary w-full p-2 border-0 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 mb-4"
+            className="font-primary w-full p-2 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 mb-4"
           />
 
           <label className="block mb-1 text-gray-900 dark:text-gray-100">
@@ -134,7 +175,7 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="font-primary w-full p-2 border-0 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 mb-4"
+            className="font-primary w-full p-2 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 mb-4"
           />
 
           <label className="block mb-1 text-gray-900 dark:text-gray-100">
@@ -142,15 +183,21 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
           </label>
           <div className="flex gap-2">
             <input
-              type="number"
+              type="text"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="w-full p-2 border-0 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 mb-4"
+              onChange={handlePriceChange}
+              className={`w-full p-2 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 ${
+                priceError
+                  ? "border-0 border-red-500 focus:ring-red-500 mb-0"
+                  : "border-0 focus:ring-blue-500 mb-4"
+              }`}
             />
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              className="p-2 border-0 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 mb-4"
+              className={`p-2 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 ${
+                priceError ? "mb-0" : "mb-4"
+              }`}
             >
               <option value="₽">₽</option>
               <option value="$">$</option>
@@ -158,6 +205,9 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
               <option value="£">£</option>
             </select>
           </div>
+          {priceError && (
+            <p className="text-red-500 text-sm mb-2">не более 15 знаков</p>
+          )}
 
           <label className="block mb-1 text-gray-900 dark:text-gray-100">
             URL фото
@@ -166,7 +216,7 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
             type="text"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className="font-primary w-full p-2 border-0 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 mb-4"
+            className="font-primary w-full p-2 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 mb-4"
             placeholder="Введите URL изображения"
           />
 
