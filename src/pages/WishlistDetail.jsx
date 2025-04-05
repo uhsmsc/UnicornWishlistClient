@@ -189,9 +189,6 @@ const Notification = ({ message, onClose }) => (
   </div>
 );
 
-
-
-
 const WishlistDetail = () => {
   const { wishlistId } = useParams();
   const { theme } = useContext(ThemeContext);
@@ -285,10 +282,9 @@ const WishlistDetail = () => {
   const breakpointColumnsObj = {
     default: 3,
     1280: 2,
-    1024: 2,
-    820: 2,
     800: 1,
   };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

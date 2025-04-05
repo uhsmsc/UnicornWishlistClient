@@ -5,10 +5,7 @@ import defaulPicture from "../assets/present.png";
 import HeartRating from "../components/HeartRating.jsx";
 import { MdOutlineArrowOutward } from "react-icons/md";
 import { ThemeContext } from "../context/ThemeContext.jsx";
-import {
-  Button,
-  Input,
-} from "@material-tailwind/react";
+import { Button, Input } from "@material-tailwind/react";
 import BookGiftModal from "../components/BookGiftModal.jsx";
 import Masonry from "react-masonry-css";
 
@@ -27,8 +24,6 @@ const PublicWishlist = () => {
     default: 3,
     1280: 2,
     1024: 1,
-    640: 1,
-    0: 1,
   };
 
   useEffect(() => {
@@ -112,13 +107,13 @@ const PublicWishlist = () => {
       </div>
     );
 
-    const formatPrice = (value) => {
-      const number = Number(value);
-      if (isNaN(number)) return "";
-      const parts = number.toFixed(2).split(".");
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-      return parts[1] === "00" ? parts[0] : `${parts[0]}.${parts[1]}`;
-    };
+  const formatPrice = (value) => {
+    const number = Number(value);
+    if (isNaN(number)) return "";
+    const parts = number.toFixed(2).split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return parts[1] === "00" ? parts[0] : `${parts[0]}.${parts[1]}`;
+  };
 
   const GiftCard = ({ gift }) => (
     <div className="relative flex flex-col bg-white/30 dark:bg-black/40 md:bg-violet-100/40 md:dark:bg-violet-300/10 rounded-2xl shadow-md p-4 py-2">
@@ -139,10 +134,10 @@ const PublicWishlist = () => {
             {gift.title}
           </div>
           <div className="text-base font-primary text-black dark:text-neutral-200">
-              {gift.price !== undefined && gift.price !== null
-                ? `${formatPrice(gift.price)} ${gift.currency || "₽"}`
-                : "Цена не указана"}
-            </div>
+            {gift.price !== undefined && gift.price !== null
+              ? `${formatPrice(gift.price)} ${gift.currency || "₽"}`
+              : "Цена не указана"}
+          </div>
           {gift.desirability && <HeartRating rating={gift.desirability} />}
           {gift.comment && (
             <div className="text-gray-600 dark:text-neutral-200 font-primary">
@@ -204,7 +199,6 @@ const PublicWishlist = () => {
       </div>
     </div>
   );
-  
 
   return (
     <div
@@ -217,7 +211,11 @@ const PublicWishlist = () => {
         <h1 className="pt-8 pb-3 px-2 text-2xl font-primary font-bold text-gray-800 dark:text-gray-100">
           {wishlist.title}
         </h1>
-        {wishlist.comment && <p className="mb-6 px-2 font-primary dark:text-indigo-100">{wishlist.comment}</p>}
+        {wishlist.comment && (
+          <p className="mb-6 px-2 font-primary dark:text-indigo-100">
+            {wishlist.comment}
+          </p>
+        )}
 
         <Masonry
           breakpointCols={breakpointColumnsObj}
