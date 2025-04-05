@@ -112,6 +112,14 @@ const PublicWishlist = () => {
       </div>
     );
 
+    const formatPrice = (value) => {
+      const number = Number(value);
+      if (isNaN(number)) return "";
+      const parts = number.toFixed(2).split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      return parts[1] === "00" ? parts[0] : `${parts[0]}.${parts[1]}`;
+    };
+
   const GiftCard = ({ gift }) => (
     <div className="relative flex flex-col bg-white/30 dark:bg-black/40 md:bg-violet-100/40 md:dark:bg-violet-300/10 rounded-2xl shadow-md p-4 py-2">
       <div className="flex flex-row mb-2">
@@ -131,10 +139,10 @@ const PublicWishlist = () => {
             {gift.title}
           </div>
           <div className="text-base font-primary text-black dark:text-neutral-200">
-            {gift.price
-              ? `${gift.price} ${gift.currency || "₽"}`
-              : "Цена не указана"}
-          </div>
+              {gift.price !== undefined && gift.price !== null
+                ? `${formatPrice(gift.price)} ${gift.currency || "₽"}`
+                : "Цена не указана"}
+            </div>
           {gift.desirability && <HeartRating rating={gift.desirability} />}
           {gift.comment && (
             <div className="text-gray-600 dark:text-neutral-200 font-primary">
@@ -147,7 +155,7 @@ const PublicWishlist = () => {
                   : "Развернуть комментарий"}
               </button>
               {expandedComments[gift._id] && (
-                <p className="my-1 whitespace-pre-line break-words dark:text-neutral-300 text-sm">
+                <p className="mt-1 whitespace-pre-line break-words dark:text-neutral-300 text-sm">
                   {gift.comment}
                 </p>
               )}
@@ -184,7 +192,7 @@ const PublicWishlist = () => {
             }}
             variant="gradient"
             disabled={!!gift.reservedBy}
-            className={`w-full h-10 px-5 py-2 font-primary text-sm normal-case text-slate-200 flex items-center justify-center ${
+            className={`w-full h-10 px-3 md:px-5 py-2 font-primary text-sm normal-case text-slate-200 flex items-center justify-center ${
               gift.reservedBy
                 ? "from-[#e9636e]/80 to-[#ec94a5]/80"
                 : "from-[#e9636e] to-[#ec94a5]"

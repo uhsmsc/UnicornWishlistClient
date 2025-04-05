@@ -41,6 +41,14 @@ const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
     };
   }, []);
 
+  const formatPrice = (value) => {
+    const number = Number(value);
+    if (isNaN(number)) return "";
+    const parts = number.toFixed(2).split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return parts[1] === "00" ? parts[0] : `${parts[0]}.${parts[1]}`;
+  };
+
   return (
     <div className="relative flex flex-col bg-white/30 dark:bg-black/40 md:bg-violet-100/40 md:dark:bg-violet-300/10 rounded-2xl shadow-md p-4 py-2">
       <div className="absolute top-4 right-2 z-10">
@@ -112,10 +120,11 @@ const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
             </div>
 
             <div className="text-base font-primary text-black dark:text-neutral-200">
-              {gift.price
-                ? `${gift.price} ${gift.currency || "₽"}`
+              {gift.price !== undefined && gift.price !== null
+                ? `${formatPrice(gift.price)} ${gift.currency || "₽"}`
                 : "Цена не указана"}
             </div>
+
             {gift.desirability && <HeartRating rating={gift.desirability} />}
             {gift.comment && (
               <div className="text-gray-600 dark:text-neutral-200 font-primary">
@@ -126,7 +135,7 @@ const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
                   {expanded ? "Скрыть комментарий" : "Развернуть комментарий"}
                 </button>
                 {expanded && (
-                  <p className="my-1 whitespace-pre-line break-words dark:text-neutral-300 text-sm">
+                  <p className="mt-1 mb-2 whitespace-pre-line break-words dark:text-neutral-300 text-sm">
                     {gift.comment}
                   </p>
                 )}
@@ -239,7 +248,7 @@ const WishlistDetail = () => {
       .writeText(publicLink)
       .then(() => {
         setNotification("Ссылка на вишлист скопирована в буфер обмена!");
-        setTimeout(() => setNotification(""), 3000); // Скрываем уведомление через 3 секунды
+        setTimeout(() => setNotification(""), 3000);
       })
       .catch((err) => console.error("Ошибка копирования ссылки:", err));
   };
