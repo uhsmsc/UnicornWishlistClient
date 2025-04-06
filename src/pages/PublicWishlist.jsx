@@ -8,6 +8,7 @@ import { ThemeContext } from "../context/ThemeContext.jsx";
 import { Button, Input } from "@material-tailwind/react";
 import BookGiftModal from "../components/BookGiftModal.jsx";
 import Masonry from "react-masonry-css";
+import { formatPrice } from "../utils/formatPrice.js";
 
 const PublicWishlist = () => {
   const { wishlistId } = useParams();
@@ -106,14 +107,6 @@ const PublicWishlist = () => {
         Вишлист не найден
       </div>
     );
-
-  const formatPrice = (value) => {
-    const number = Number(value);
-    if (isNaN(number)) return "";
-    const parts = number.toFixed(2).split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return parts[1] === "00" ? parts[0] : `${parts[0]}.${parts[1]}`;
-  };
 
   const GiftCard = ({ gift }) => (
     <div className="relative flex flex-col bg-white/30 dark:bg-black/40 md:bg-violet-100/40 md:dark:bg-violet-300/10 rounded-2xl shadow-md p-4 py-2">

@@ -9,6 +9,7 @@ import HeartRating from "../components/HeartRating.jsx";
 import { MdOutlineArrowOutward } from "react-icons/md";
 import { MdContentCopy } from "react-icons/md";
 import Masonry from "react-masonry-css";
+import { formatPrice } from "../utils/formatPrice.js";
 
 const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
   const [expanded, setExpanded] = useState(false);
@@ -40,14 +41,6 @@ const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-
-  const formatPrice = (value) => {
-    const number = Number(value);
-    if (isNaN(number)) return "";
-    const parts = number.toFixed(2).split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return parts[1] === "00" ? parts[0] : `${parts[0]}.${parts[1]}`;
-  };
 
   return (
     <div className="relative flex flex-col bg-white/30 dark:bg-black/40 md:bg-violet-100/40 md:dark:bg-violet-300/10 rounded-2xl shadow-md p-4 py-2">

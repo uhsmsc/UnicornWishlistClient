@@ -69,17 +69,10 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
         return;
       }
 
-      let numericPrice = price.replace(/\s/g, "");
-
-      if (numericPrice.endsWith(".")) {
-        numericPrice = numericPrice.slice(0, -1);
-      }
-      const finalPrice = numericPrice ? Number(numericPrice) : undefined;
-
       const requestData = {
         link,
         title,
-        price: finalPrice,
+        price: price || undefined,
         currency,
         photo: imageUrl || photo,
         desirability,
@@ -115,33 +108,16 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
   };
 
   const handlePriceChange = (e) => {
-    const original = e.target.value;
-    let value = original.replace(/\s+/g, "").replace(",", ".");
-    const parts = value.split(".");
-    let intPart = parts[0].replace(/\D/g, "");
-    let decimalPart = parts[1] ? parts[1].replace(/\D/g, "") : "";
+    const value = e.target.value;
+    const digitsOnly = value.replace(/\D/g, "");
 
-    if (decimalPart.length > 2) {
-      decimalPart = decimalPart.substring(0, 2);
-    }
-
-    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-
-    let formattedValue = formattedInt;
-    if (parts.length > 1 || original.endsWith(".") || original.endsWith(",")) {
-      formattedValue += "." + decimalPart;
-    }
-
-    const rawDigits = formattedValue.replace(/[\s.]/g, "");
-
-    if (rawDigits.length > 15) {
+    if (digitsOnly.length > 15) {
       setPriceError(true);
-      return;
     } else {
       setPriceError(false);
     }
 
-    setPrice(formattedValue);
+    setPrice(value);
   };
 
   return (
@@ -183,7 +159,8 @@ const CreateGiftModal = ({ onClose, onGiftCreated, wishlistId, giftData }) => {
           </label>
           <div className="flex gap-2">
             <input
-              type="text"
+              type="number"
+              inputMode="decimal"
               value={price}
               onChange={handlePriceChange}
               className={`w-full p-2 rounded-md bg-slate-100 dark:bg-gray-300/20 text-gray-900 dark:text-gray-100 focus:ring-2 ${
