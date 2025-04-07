@@ -10,36 +10,39 @@ import { MdOutlineArrowOutward } from "react-icons/md";
 import { MdContentCopy } from "react-icons/md";
 import Masonry from "react-masonry-css";
 import { formatPrice } from "../utils/formatPrice.js";
+import useClickOutside from "../hooks/useClickOutside.js";
 
 const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
   const [expanded, setExpanded] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
 
-  const toggleComment = () => setExpanded((prev) => !prev);
-
   const onToggleDropdown = (id) => {
-    setIsDropdownOpen((prev) => !prev);
+    setIsDropdownOpen((prevId) => (prevId === id ? null : id));
   };
+
+  const closeDropdown = () => {
+    setIsDropdownOpen(null);
+  };
+
+  useClickOutside(dropdownRef, closeDropdown, [buttonRef]);
+
+  const toggleComment = () => setExpanded((prev) => !prev);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target)
+        dropdownRef.current?.contains(event.target) ||
+        buttonRef.current?.contains(event.target)
       ) {
-        setIsDropdownOpen(false);
+        return;
       }
+      closeDropdown();
     };
 
     document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   return (
@@ -65,10 +68,10 @@ const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
             />
           </svg>
         </button>
-        {isDropdownOpen && (
+        {isDropdownOpen === gift._id && (
           <div
             ref={dropdownRef}
-            className="absolute right-0 mt-2 w-32 bg-indigo-100 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden divide-y divide-stone-400 z-20 font-primary"
+            className="absolute right-0 w-32 text-black bg-white dark:border-gray-700 shadow-lg rounded-lg overflow-hidden  z-[99999] font-primary"
           >
             <button
               onClick={() => {

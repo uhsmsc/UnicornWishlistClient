@@ -17,10 +17,13 @@ import getDeclension from "@dubaua/get-declension";
 import { BiMessageSquareAdd } from "react-icons/bi";
 import CreateGiftModal from "../components/CreateGiftModal.jsx";
 import { useNavigate } from "react-router-dom";
+import useClickOutside from "../hooks/useClickOutside.js";
 
 const WishlistCard = ({ wishlist, onEdit, onDelete, onAddGift }) => {
   const navigate = useNavigate();
   const [isGiftModalOpen, setIsGiftModalOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleNavigation = () => {
     if (!isGiftModalOpen) {
@@ -36,25 +39,11 @@ const WishlistCard = ({ wishlist, onEdit, onDelete, onAddGift }) => {
     many: "желаний",
   });
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
   const onToggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
+  useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
 
   return (
     <div
@@ -135,7 +124,7 @@ const WishlistCard = ({ wishlist, onEdit, onDelete, onAddGift }) => {
         {isDropdownOpen && (
           <div
             ref={dropdownRef}
-            className="absolute right-0 mt-2 w-32 text-black bg-white dark:border-gray-700 shadow-lg rounded-lg overflow-hidden divide-y divide-stone-400 z-[99999] font-primary"
+            className="absolute right-0 w-32 text-black bg-white dark:border-gray-700 shadow-lg rounded-lg overflow-hidden  z-[99999] font-primary"
           >
             <button
               onClick={(e) => {
