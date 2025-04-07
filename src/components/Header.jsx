@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, forwardRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  forwardRef,
+  useRef,
+} from "react";
 import { motion } from "framer-motion";
 import { ThemeContext } from "../context/ThemeContext.jsx";
 import Switcher from "./Switcher.jsx";
@@ -14,6 +20,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import TelegramLogin from "./TelegramLogin.jsx";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { AuthContext } from "../context/AuthContext.jsx";
+import useClickOutside from "../hooks/useClickOutside.js";
 
 const Header = forwardRef(({ autoOpenLogin = false }, ref) => {
   const { user, login, logout } = useContext(AuthContext);
@@ -26,6 +33,11 @@ const Header = forwardRef(({ autoOpenLogin = false }, ref) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isTelegramModalOpen, setIsTelegramModalOpen] = useState(false);
+
+  const menuRef = useRef(null);
+  const avatarButtonRef = useRef(null);
+
+  useClickOutside(menuRef, () => setMenuOpen(false), [avatarButtonRef]);
 
   useEffect(() => {
     if (autoOpenLogin && !user) {
@@ -85,7 +97,10 @@ const Header = forwardRef(({ autoOpenLogin = false }, ref) => {
           {user ? (
             (!isProfilePage || !isSmallScreen) && (
               <div className="relative lg:block">
-                <button onClick={() => setMenuOpen((prev) => !prev)}>
+                <button
+                  ref={avatarButtonRef}
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                >
                   <Avatar
                     src={user.photo_url || user.avatar}
                     alt={user.name || "avatar"}
@@ -93,8 +108,11 @@ const Header = forwardRef(({ autoOpenLogin = false }, ref) => {
                   />
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-indigo-100 shadow-lg rounded-lg overflow-hidden divide-y divide-stone-400">
-                    <Link to="/profile">
+                  <div
+                    ref={menuRef}
+                    className="absolute right-0 mt-1 w-32 text-black bg-white dark:border-gray-700 shadow-lg rounded-lg overflow-hidden  z-[99999] font-primary"
+                  >
+                    <Link to="/profile" onClick={() => setMenuOpen(false)}>
                       <button className="font-primary block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 hover:bg-violet-300/20">
                         Профиль
                       </button>
@@ -123,7 +141,9 @@ const Header = forwardRef(({ autoOpenLogin = false }, ref) => {
       </motion.header>
 
       <Dialog open={isTelegramModalOpen} handler={setIsTelegramModalOpen}>
-        <DialogHeader className="font-primary">Войти через Telegram</DialogHeader>
+        <DialogHeader className="font-primary">
+          Войти через Telegram
+        </DialogHeader>
         <DialogBody divider>
           <p className="mb-4 font-primary">
             Нажмите на кнопку ниже, чтобы авторизоваться через Telegram.
@@ -134,8 +154,7 @@ const Header = forwardRef(({ autoOpenLogin = false }, ref) => {
           <Button
             variant="text"
             color="red"
-            onClick={() => setIsTelegramModalOpen(false)
-            }
+            onClick={() => setIsTelegramModalOpen(false)}
             className="font-primary"
           >
             Отмена
