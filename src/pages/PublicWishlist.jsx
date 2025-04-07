@@ -5,12 +5,10 @@ import defaulPicture from "../assets/present.png";
 import HeartRating from "../components/HeartRating.jsx";
 import { MdOutlineArrowOutward } from "react-icons/md";
 import { ThemeContext } from "../context/ThemeContext.jsx";
-import {
-  Button,
-  Input,
-} from "@material-tailwind/react";
+import { Button, Input } from "@material-tailwind/react";
 import BookGiftModal from "../components/BookGiftModal.jsx";
 import Masonry from "react-masonry-css";
+import { formatPrice } from "../utils/formatPrice.js";
 
 const PublicWishlist = () => {
   const { wishlistId } = useParams();
@@ -27,8 +25,6 @@ const PublicWishlist = () => {
     default: 3,
     1280: 2,
     1024: 1,
-    640: 1,
-    0: 1,
   };
 
   useEffect(() => {
@@ -131,8 +127,8 @@ const PublicWishlist = () => {
             {gift.title}
           </div>
           <div className="text-base font-primary text-black dark:text-neutral-200">
-            {gift.price
-              ? `${gift.price} ${gift.currency || "₽"}`
+            {gift.price !== undefined && gift.price !== null
+              ? `${formatPrice(gift.price)} ${gift.currency || "₽"}`
               : "Цена не указана"}
           </div>
           {gift.desirability && <HeartRating rating={gift.desirability} />}
@@ -147,7 +143,7 @@ const PublicWishlist = () => {
                   : "Развернуть комментарий"}
               </button>
               {expandedComments[gift._id] && (
-                <p className="my-1 whitespace-pre-line break-words dark:text-neutral-300 text-sm">
+                <p className="mt-1 whitespace-pre-line break-words dark:text-neutral-300 text-sm">
                   {gift.comment}
                 </p>
               )}
@@ -184,7 +180,7 @@ const PublicWishlist = () => {
             }}
             variant="gradient"
             disabled={!!gift.reservedBy}
-            className={`w-full h-10 px-5 py-2 font-primary text-sm normal-case text-slate-200 flex items-center justify-center ${
+            className={`w-full h-10 px-3 md:px-5 py-2 font-primary text-sm normal-case text-slate-200 flex items-center justify-center ${
               gift.reservedBy
                 ? "from-[#e9636e]/80 to-[#ec94a5]/80"
                 : "from-[#e9636e] to-[#ec94a5]"
@@ -196,7 +192,6 @@ const PublicWishlist = () => {
       </div>
     </div>
   );
-  
 
   return (
     <div
@@ -209,7 +204,11 @@ const PublicWishlist = () => {
         <h1 className="pt-8 pb-3 px-2 text-2xl font-primary font-bold text-gray-800 dark:text-gray-100">
           {wishlist.title}
         </h1>
-        {wishlist.comment && <p className="mb-6 px-2 font-primary dark:text-indigo-100">{wishlist.comment}</p>}
+        {wishlist.comment && (
+          <p className="mb-6 px-2 font-primary dark:text-indigo-100">
+            {wishlist.comment}
+          </p>
+        )}
 
         <Masonry
           breakpointCols={breakpointColumnsObj}

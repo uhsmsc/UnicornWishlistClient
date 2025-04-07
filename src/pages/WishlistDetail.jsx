@@ -9,6 +9,7 @@ import HeartRating from "../components/HeartRating.jsx";
 import { MdOutlineArrowOutward } from "react-icons/md";
 import { MdContentCopy } from "react-icons/md";
 import Masonry from "react-masonry-css";
+import { formatPrice } from "../utils/formatPrice.js";
 import useClickOutside from "../hooks/useClickOutside.js";
 
 const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
@@ -115,10 +116,11 @@ const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
             </div>
 
             <div className="text-base font-primary text-black dark:text-neutral-200">
-              {gift.price
-                ? `${gift.price} ${gift.currency || "₽"}`
+              {gift.price !== undefined && gift.price !== null
+                ? `${formatPrice(gift.price)} ${gift.currency || "₽"}`
                 : "Цена не указана"}
             </div>
+
             {gift.desirability && <HeartRating rating={gift.desirability} />}
             {gift.comment && (
               <div className="text-gray-600 dark:text-neutral-200 font-primary">
@@ -129,7 +131,7 @@ const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
                   {expanded ? "Скрыть комментарий" : "Развернуть комментарий"}
                 </button>
                 {expanded && (
-                  <p className="my-1 whitespace-pre-line break-words dark:text-neutral-300 text-sm">
+                  <p className="mt-1 mb-2 whitespace-pre-line break-words dark:text-neutral-300 text-sm">
                     {gift.comment}
                   </p>
                 )}
@@ -278,6 +280,7 @@ const WishlistDetail = () => {
     1280: 2,
     800: 1,
   };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
