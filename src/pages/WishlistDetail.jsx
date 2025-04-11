@@ -11,6 +11,7 @@ import { MdContentCopy } from "react-icons/md";
 import Masonry from "react-masonry-css";
 import { formatPrice } from "../utils/formatPrice.js";
 import useClickOutside from "../hooks/useClickOutside.js";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal.jsx";
 
 const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
   const [expanded, setExpanded] = useState(false);
@@ -84,7 +85,7 @@ const GiftCard = ({ gift, wishlist, onEdit, onDelete }) => {
             </button>
             <button
               onClick={() => {
-                onDelete(gift._id);
+                onDelete(gift);
                 setIsDropdownOpen(false);
               }}
               className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-200 hover:bg-violet-300/20"
@@ -194,6 +195,8 @@ const WishlistDetail = () => {
   const [notAuthorized, setNotAuthorized] = useState(false);
   const [giftToEdit, setGiftToEdit] = useState(null);
   const [notification, setNotification] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteGift, setDeleteGift] = useState(null);
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -244,6 +247,11 @@ const WishlistDetail = () => {
         setTimeout(() => setNotification(""), 3000);
       })
       .catch((err) => console.error("Ошибка копирования ссылки:", err));
+  };
+
+  const handleRequestDeleteGift = (gift) => {
+    setDeleteGift(gift);
+    setIsDeleteModalOpen(true);
   };
 
   const handleDeleteGift = async (giftId) => {
@@ -358,7 +366,7 @@ const WishlistDetail = () => {
                   gift={gift}
                   wishlist={wishlist}
                   onEdit={handleEditGift}
-                  onDelete={handleDeleteGift}
+                  onDelete={(giftId) => handleRequestDeleteGift(giftId)}
                 />
               </div>
             ))
@@ -394,6 +402,18 @@ const WishlistDetail = () => {
           onClose={() => setNotification("")}
         />
       )}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => {
+          if (deleteGift) {
+            handleDeleteGift(deleteGift._id);
+          }
+          setIsDeleteModalOpen(false);
+        }}
+        itemType="gift"
+        itemName={deleteGift?.title || ""}
+      />
     </div>
   );
 };
