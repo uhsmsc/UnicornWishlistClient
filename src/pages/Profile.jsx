@@ -14,7 +14,6 @@ import CreateWishlistModal from "../components/CreateWishlistModal.jsx";
 import defaulPicture from "../assets/present.png";
 import { IoLogOutOutline } from "react-icons/io5";
 import getDeclension from "@dubaua/get-declension";
-import { BiMessageSquareAdd } from "react-icons/bi";
 import CreateGiftModal from "../components/CreateGiftModal.jsx";
 import { useNavigate } from "react-router-dom";
 import useClickOutside from "../hooks/useClickOutside.js";
@@ -45,6 +44,12 @@ const WishlistCard = ({ wishlist, onEdit, onDelete, onAddGift }) => {
 
   useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
 
+  const handleGiftCreated = (newGift) => {
+    setIsGiftModalOpen(false);
+    onAddGift(wishlist._id, newGift);
+    navigate(`/wishlist/${wishlist._id}`);
+  };
+
   return (
     <div
       className="relative flex flex-col items-center justify-between cursor-pointer"
@@ -64,15 +69,18 @@ const WishlistCard = ({ wishlist, onEdit, onDelete, onAddGift }) => {
                 />
               ))
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center flex-col text-center justify-center">
+              <p className="font-primary text-gray-600 dark:text-slate-300 m-3 text-sm">
+                В этом вишлисте еще нет подарков
+              </p>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsGiftModalOpen(true);
                 }}
-                className="text-7xl text-gray-600 dark:text-gray-300"
+                className="font-primary font-bold text-[#ee7580] dark:text-[#a4a6f1]"
               >
-                <BiMessageSquareAdd className="text-black/80" />
+                Добавить
               </button>
             </div>
           )}
@@ -91,10 +99,7 @@ const WishlistCard = ({ wishlist, onEdit, onDelete, onAddGift }) => {
         <CreateGiftModal
           wishlistId={wishlist._id}
           onClose={() => setIsGiftModalOpen(false)}
-          onGiftCreated={(newGift) => {
-            setIsGiftModalOpen(false);
-            onAddGift(wishlist._id, newGift);
-          }}
+          onGiftCreated={handleGiftCreated}
         />
       )}
       <div className="absolute top-4 right-0 z-10">
